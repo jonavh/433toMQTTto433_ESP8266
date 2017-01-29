@@ -91,6 +91,16 @@ PubSubClient client(mqtt_server, 1883, callback, espClient);
 //MQTT last attemps reconnection number
 long lastReconnectAttempt = 0;
 
+//Light Reading**********************************************
+unsigned long previousLightMillis = 0;
+const int lightInterval = 120000;
+//Temp Sensor************************************************
+#include <dht.h>
+dht DHT;
+#define DHT11_PIN 12
+int inPin = 12;
+
+
 // Callback function, when the gateway receive an MQTT value on the topics subscribed this function is called
 void callback(char* topic, byte* payload, unsigned int length) {
   // In order to republish this payload, a copy must be made
@@ -178,6 +188,10 @@ boolean reconnect() {
 
 void loop()
 {
+  
+  //Start Extra Sensors
+  extraSensor();  
+  
   //MQTT client connexion management
   if (!client.connected()) {
     long now = millis();
@@ -353,3 +367,31 @@ void trc(String msg){
   Serial.println(msg);
   }
 }
+
+//More Sensors
+
+void extraSensor() {
+
+if (millis() - previousLightMillis >= lightInterval) {
+
+  //Read Analog Light Sensor
+  int sensorValue = analogRead(A0);
+  Serial.println(sensorValue);
+  previousLightMillis = millis();
+  String lighttopic = "home/Light";
+  sendMQTT(lighttopic,String(sensorValue));
+  //Read DHT Sensor
+  int chk = DHT.read11(DHT11_PIN);
+  float temp = DHT.temperature;
+  Serial.print("Temperature = ");
+  Serial.println(1.8*temp+32);
+  Serial.print("Humidity = ");
+  Serial.println(DHT.humidity);
+  String temptopic = "home/DHT/temp";
+  sendMQTT(temptopic,String(1.8*temp+32));
+  String humiditytopic = "home/DHT/humidity";
+  sendMQTT(humiditytopic,String(DHT.humidity));
+}
+
+}
+
