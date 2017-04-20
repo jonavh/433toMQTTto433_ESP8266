@@ -46,7 +46,7 @@ mosquitto_pub -t home/MQTTto433/ -m 1315153
 int incomingByte = 0;// for incoming serial data
 int outByte = 0;
 
-// software serial : TX = digital pin 7, RX = digital pin 8
+// software serial : TX = digital pin 12, RX = digital pin 14
 SoftwareSerial portOne(14, 12);
 
 
