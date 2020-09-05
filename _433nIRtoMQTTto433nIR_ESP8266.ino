@@ -329,7 +329,7 @@ void receivingMQTT(String topicNameRec, String callbackstring) {
       mySwitch.send(data, 24);
     }
 
-//IR Recieved
+//IR Received
   if (topicNameRec = subjectMQTTtoIR){
   char input1[3];
   char input2[3];
